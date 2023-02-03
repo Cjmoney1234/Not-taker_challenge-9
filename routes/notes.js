@@ -5,29 +5,25 @@ const {
   readAndAppend,
   writeToFile,
 } = require('../routes/helpers/fsUtils');
-//const notesData = require('../db/db.json');
 
 notes.get('/', (req, res) => {
     readFromFile('db/db.json').then((data) => res.json(JSON.parse(data)));
-    //res.json(notesData);
 });
 
 
 
-notes.delete('/notes_id', (req, res) => {
-    let selID = parseInt(req.params.id);
-    //  Read JSON file
-    for (let i = 0; i < notesData.length; i++) {
-      if (selID === notesData[i].id) {
-        notesData.splice(i, 1);
-        let noteJSON = JSON.stringify(notesData, null, 2);
-  
-        writeToFile("db/db.json", noteJSON).then(function () {
-          console.log("Note has been deleted.");
- 
+notes.delete('/:note_id', (req, res) => {
+    const noteId = req.params.note_id;
+    console.log("Deleted ", noteId);
+    readFromFile("db/db.json").then((data) => {
+        const notes = JSON.parse(data);
+
+        const filteredNotes = notes.filter((note) => note.noteId == noteId);
+        return filteredNotes;
     });
-      }}
 });
+
+
 
 notes.post('/', (req, res) => {
     console.log(req.body);
@@ -45,11 +41,6 @@ notes.post('/', (req, res) => {
     }   else {
         res.json('Error in posting notes');
     }
-    //res.json(notesData);
 });
 
 module.exports = notes;
-
-
-
-
